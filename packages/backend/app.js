@@ -16,18 +16,24 @@ app.use(morgan("dev"));
 app.use(cookieParser(config.TOKEN));
 
 const corsOptions = {
-	// Add your address here i.e. your forwarded address from a cloud environment
-	origin: [
-		"http://127.0.0.1:5173",
-		"http://127.0.0.1:4173",
-		"http://localhost:5173",
-		"http://localhost:4173",
-		"http://[::1]:4173",
-		"http://[::1]:5173",
-	],
-	credentials: true, //included credentials as true
+	origin: (origin, callback) => {
+		const allowedOrigins = [
+			"https://expert-zebra-6qqp5667jvrhqq4-5173.app.github.dev",
+			"http://127.0.0.1:5173",
+			"http://localhost:5173",
+			"http://[::1]:5173",
+		];
+		if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+			// allow requests with no origin, like mobile apps or curl requests
+			callback(null, true);
+		} else {
+			callback(new Error("Not allowed by CORS"));
+		}
+	},
+	credentials: true,
 	preflightContinue: false,
 };
+
 
 app.use(cors(corsOptions));
 
